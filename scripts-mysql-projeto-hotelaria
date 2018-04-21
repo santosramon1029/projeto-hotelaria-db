@@ -1,0 +1,123 @@
+cria tabela hotelaria
+CREATE TABLE `hotelaria_db`.`hospede` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cpf` VARCHAR(11) NOT NULL,
+  `nome` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`id`));
+
+cria tabela tipo_pagamento
+CREATE TABLE `hotelaria_db`.`tipo_pagamento` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`));
+
+cria tabela reserva
+CREATE TABLE `hotelaria_db`.`reserva` (
+  `codigo` INT NOT NULL AUTO_INCREMENT,
+  `data_reserva` DATE NOT NULL,
+  `data_compra` DATE NOT NULL,
+  `valor_compra` DECIMAL(10,2) NOT NULL,
+  `hospede_fiador_id` INT NOT NULL,
+  `tipo_pagamento_id` INT NOT NULL,
+  PRIMARY KEY (`codigo`),
+  INDEX `reserva_hospede_FK_idx` (`hospede_fiador_id` ASC),
+  INDEX `reserva_tipo_pagamento_FK_idx` (`tipo_pagamento_id` ASC),
+  CONSTRAINT `reserva_hospede_FK`
+    FOREIGN KEY (`hospede_fiador_id`)
+    REFERENCES `hotelaria_db`.`hospede` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `reserva_tipo_pagamento_FK`
+    FOREIGN KEY (`tipo_pagamento_id`)
+    REFERENCES `hotelaria_db`.`tipo_pagamento` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+cria tabela hospede_reserva
+CREATE TABLE `hotelaria_db`.`hospede_reserva` (
+  `hospede_id` INT NOT NULL,
+  `reserva_codigo` INT NOT NULL,
+  PRIMARY KEY (`hospede_id`, `reserva_codigo`),
+  INDEX `hospede_reserva_reserva_FK_idx` (`reserva_codigo` ASC),
+  CONSTRAINT `hospede_reserva_hospede_FK`
+    FOREIGN KEY (`hospede_id`)
+    REFERENCES `hotelaria_db`.`hospede` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `hospede_reserva_reserva_FK`
+    FOREIGN KEY (`reserva_codigo`)
+    REFERENCES `hotelaria_db`.`reserva` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+cria tabela temporada
+CREATE TABLE `hotelaria_db`.`temporada` (
+  `codigo` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`codigo`));
+
+cria tabela servico
+CREATE TABLE `hotelaria_db`.`servico` (
+  `codigo` INT NOT NULL,
+  `descricao` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`codigo`));
+
+cria tabela tipo_quarto
+CREATE TABLE `hotelaria_db`.`tipo_quarto` (
+  `codigo` INT NOT NULL,
+  `descricao` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`codigo`));
+
+cria tabela quarto
+CREATE TABLE `hotelaria_db`.`quarto` (
+  `codigo` INT NOT NULL AUTO_INCREMENT,
+  `preco` VARCHAR(45) NOT NULL,
+  `temporada_codigo` INT NOT NULL,
+  `tipo_quarto_codigo` INT NOT NULL,
+  PRIMARY KEY (`codigo`),
+  INDEX `quarto_temporada_FK_idx` (`temporada_codigo` ASC),
+  INDEX `quarto_tipo_quarto_FK_idx` (`tipo_quarto_codigo` ASC),
+  CONSTRAINT `quarto_temporada_FK`
+    FOREIGN KEY (`temporada_codigo`)
+    REFERENCES `hotelaria_db`.`temporada` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `quarto_tipo_quarto_FK`
+    FOREIGN KEY (`tipo_quarto_codigo`)
+    REFERENCES `hotelaria_db`.`tipo_quarto` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+cria tabela servico_quarto
+CREATE TABLE `hotelaria_db`.`quarto_servico` (
+  `servico_codigo` INT NOT NULL,
+  `quarto_codigo` INT NOT NULL,
+  PRIMARY KEY (`servico_codigo`, `quarto_codigo`),
+  INDEX `quarto_servico_quarto_FK_idx` (`quarto_codigo` ASC),
+  CONSTRAINT `quarto_servico_servico_FK`
+    FOREIGN KEY (`servico_codigo`)
+    REFERENCES `hotelaria_db`.`servico` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `quarto_servico_quarto_FK`
+    FOREIGN KEY (`quarto_codigo`)
+    REFERENCES `hotelaria_db`.`quarto` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+cria tabela reserva_quarto
+CREATE TABLE `hotelaria_db`.`reserva_quarto` (
+  `reserva_codigo` INT NOT NULL,
+  `quarto_codigo` INT NOT NULL,
+  PRIMARY KEY (`reserva_codigo`, `quarto_codigo`),
+  INDEX `reserva_quarto_quarto_FK_idx` (`quarto_codigo` ASC),
+  CONSTRAINT `reserva_quarto_reserva_FK`
+    FOREIGN KEY (`reserva_codigo`)
+    REFERENCES `hotelaria_db`.`reserva` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `reserva_quarto_quarto_FK`
+    FOREIGN KEY (`quarto_codigo`)
+    REFERENCES `hotelaria_db`.`quarto` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
